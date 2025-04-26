@@ -44,8 +44,10 @@ const server = net.createServer((socket) => {
       }else if(parentRoute == 'files'){
         let currRoute = reqRoute.split('/')[2];
         console.log(" in file route",parentRoute,currRoute);
+        let contentLen = parentRoute.length + currRoute.length;
+        let contentVal = currRoute;
         if(currRoute !== 'non_existant_file'){
-           socket.write('HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: 13\r\n\r\nHello, World!');
+           socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${contentLen}\r\n\r\n${contentVal}}`);
         }
 
       }
