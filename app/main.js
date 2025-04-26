@@ -8,7 +8,7 @@ const server = net.createServer((socket) => {
  // console.log(" socket ",socket);
   //socket.write(" Status : 200");
   socket.on('data',()=> {
-    socket.write("200");
+    socket.write("HTTP/1.1 200 OK\r\n\r\n");
   })
   // socket.on("close", () => {
   //   socket.end();
