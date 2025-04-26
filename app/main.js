@@ -12,12 +12,18 @@ const server = net.createServer((socket) => {
     
     let reqRoute = dataStr.split(' ')[1];
     console.log('reqRoute',reqRoute,reqRoute.length);
-    let echoRes = reqRoute.split('/')[2] || '';
-    if(echoRes){
-      socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${echoRes.length}\r\n\r\n${echoRes}`);
+    if(reqRoute.length == 1){
+      socket.write('HTTP/1.1 200 OK\r\n\r\n');
     }else{
-      socket.write(`HTTP/1.1 404 Not Found\r\n\r\n`)
+      let echoRes = reqRoute.split('/')[2] || '';
+      if(echoRes){
+        socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${echoRes.length}\r\n\r\n${echoRes}`);
+      }else{
+        socket.write('HTTP/1.1 400 Bad request\r\n\r\n');
+      }
+      
     }
+    
   
   })
   // socket.on("close", () => {
