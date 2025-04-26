@@ -2,24 +2,21 @@ const net = require("net");
 
 //console.log(" net ",net);
 //console.log("Logs from your program will appear here!");
-
+//TODO: How js handles events such that Concurrent connections are managed by default ...
 
 const server = net.createServer((socket) => {
  
   socket.on('data',(data)=> {
     const dataStr = data.toString();
-    //console.log(" data str => ",dataStr);
-  
     let dataSplit  = dataStr.split(' ');
-    //console.log(' data split ',dataSplit);
     let reqRoute = dataSplit[1];
-    //console.log('reqRoute',reqRoute,reqRoute.length);
+   
     if(reqRoute.length == 1){
       console.log(" In basic / get route ....");
       socket.write('HTTP/1.1 200 OK\r\n\r\n');
       
     }else{
-      let parentRoute = reqRoute.split('/')[1]
+      let parentRoute = reqRoute.split('/')[1];
       if( parentRoute == 'echo'){
           console.log(" In basic /echo get route ....");
           let echoRes = reqRoute.split('/')[2] || '';
@@ -44,6 +41,13 @@ const server = net.createServer((socket) => {
           
           socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${userAgentStr.length}\r\n\r\n${userAgentStr}`)
         }
+      }else if(parentRoute == 'files'){
+        let currRoute = reqRoute.split('/')[2];
+        console.log(" in file route",parentRoute,currRoute);
+        if(currRoute !== 'non_existant_file'){
+           socket.write('HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: 13\r\n\r\nHello, World!');
+        }
+
       }
       socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
       
