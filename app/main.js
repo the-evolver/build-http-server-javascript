@@ -7,6 +7,7 @@ const net = require("net");
 const server = net.createServer((socket) => {
  
   socket.on('data',(data)=> {
+    console.log(" data ... ", data );
     const dataStr = data.toString();
     let dataSplit  = dataStr.split(' ');
     let reqRoute = dataSplit[1];
