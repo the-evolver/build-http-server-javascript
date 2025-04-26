@@ -5,14 +5,14 @@ console.log("Logs from your program will appear here!");
 
 
 const server = net.createServer((socket) => {
-  console.log(" socket ",socket);
-  socket.write(200);
-  // socket.on('data',()=> {
-  //   console.log("goota a connection mate ....");
-  // })
+ // console.log(" socket ",socket);
+  //socket.write(" Status : 200");
+  socket.on('data',()=> {
+    socket.write("200");
+  })
   // socket.on("close", () => {
   //   socket.end();
   // });
 });
 
-server.listen(4221, "localhost");
+server.listen(4222, "localhost");
