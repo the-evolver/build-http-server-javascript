@@ -31,8 +31,10 @@ const server = net.createServer((socket) => {
         console.log(" In basic /user-agent get route ....");
         const dataReqArr = dataStr.split('\n');
         let userAgentStr = '';
-        for(let str in dataReqArr){
+        for(let str of dataReqArr){
+            console.log(" str ",str);
             if(str.startsWith("User-Agent")){
+                console.log("---",str);
                 userAgentStr = str.split(':')[1].slice(1);
                 break;
             }
