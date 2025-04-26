@@ -15,10 +15,10 @@ const server = net.createServer((socket) => {
     let echoRes = reqRoute.split('/')[2] || '';
     if(echoRes){
       socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${echoRes.length}\r\n\r\n${echoRes}`);
+    }else{
+      socket.write(`HTTP/1.1 404 Not Found\r\n\r\n`)
     }
-   
-    
-    
+  
   })
   // socket.on("close", () => {
   //   socket.end();
