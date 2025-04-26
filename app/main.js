@@ -19,7 +19,7 @@ const server = net.createServer((socket) => {
       if(echoRes){
         socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${echoRes.length}\r\n\r\n${echoRes}`);
       }else{
-        socket.write('HTTP/1.1 400 Bad request\r\n\r\n');
+        socket.write('HTTP/1.1 404 Bad request\r\n\r\n');
       }
       
     }
