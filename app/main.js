@@ -32,10 +32,10 @@ const server = net.createServer((socket) => {
         const dataReqArr = dataStr.split('\n');
         let userAgentStr = '';
         for(let str of dataReqArr){
-            console.log(" str ",str);
+            //console.log(" str ",str);
             if(str.startsWith("User-Agent")){
                 console.log("---",str);
-                userAgentStr = str.split(':')[1].slice(1);
+                userAgentStr = str.split(':')[1].trim();
                 break;
             }
         }
