@@ -4,8 +4,10 @@ const net = require("net");
 //console.log("Logs from your program will appear here!");
 //TODO: How js handles events such that Concurrent connections are managed by default ...
 
+
+
 const server = net.createServer((socket) => {
- 
+   
   socket.on('data',(data)=> {
     console.log(" data ... ", data.toString() );
     const dataStr = data.toString();
@@ -43,6 +45,7 @@ const server = net.createServer((socket) => {
           socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${userAgentStr.length}\r\n\r\n${userAgentStr}`)
         }
       }else if(parentRoute == 'files'){
+        console.log("process.argv ",process.argv);
         let currRoute = reqRoute.split('/')[2];
         console.log(" in file route",parentRoute,currRoute);
         let contentLen = parentRoute.length + currRoute.length;
