@@ -14,7 +14,7 @@ if(process.argv.indexOf("--directory") != -1 && process.argv[process.argv.indexO
 
 const server = net.createServer((socket) => {
    
-  socket.on('data',(data)=> {
+  socket.on('data',async (data)=> {
     console.log(" data ... ", data.toString() );
     const dataStr = data.toString();
     let dataSplit  = dataStr.split(' ');
@@ -58,7 +58,7 @@ const server = net.createServer((socket) => {
         let contentLen = parentRoute.length + currRoute.length;
         let contentVal = currRoute;
         console.log(" filepath ",filepath);
-        fs.readFileSync(filepath,'utf-8',(err,data)=>{
+        const readFile = await fs.readFile(filepath,'utf-8',(err,data)=>{
             console.log("_",data);
             if(!err){
                console.log('-----');
