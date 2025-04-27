@@ -58,7 +58,7 @@ const server = net.createServer((socket) => {
         let contentLen = parentRoute.length + currRoute.length;
         let contentVal = currRoute;
         console.log(" filepath ",filepath);
-        fs.readFile(filepath,'utf-8',(data)=>{
+        fs.readFile(filepath,'utf-8',(err,data)=>{
             console.log("_",data);
             if(data){
                 
