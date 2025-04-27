@@ -1,10 +1,16 @@
 const net = require("net");
+const path = require('path')
+const fs = require('fs');
 
 //console.log(" net ",net);
 //console.log("Logs from your program will appear here!");
 //TODO: How js handles events such that Concurrent connections are managed by default ...
 
-
+let directoryPath = null;
+let filepath = null;
+if(process.argv.indexOf("--directory") != -1 && process.argv[process.argv.indexOf("--directory") + 1]){
+  directoryPath = process.argv[process.argv.indexOf("--directory") + 1];
+}
 
 const server = net.createServer((socket) => {
    
@@ -47,23 +53,22 @@ const server = net.createServer((socket) => {
       }else if(parentRoute == 'files'){
         console.log("process.argv ",process.argv);
         let currRoute = reqRoute.split('/')[2];
+        filepath = path.join(directoryPath,currRoute);
         console.log(" in file route",parentRoute,currRoute);
         let contentLen = parentRoute.length + currRoute.length;
         let contentVal = currRoute;
-        if(currRoute !== 'non_existant_file'){
-           socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${contentLen}\r\n\r\n${contentVal}}`);
-        }
-
+        fs.readFile(filepath,'utf-8',(data)=>{
+            if(data){
+                contentLen = data.length;
+                contentVal = data;
+                socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${contentLen}\r\n\r\n${contentVal}}`);
+            }
+        })
       }
       socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
-      
     }
-    
-  
   })
-  // socket.on("close", () => {
-  //   socket.end();
-  // });
+
 });
 
 server.listen(4221, "localhost");
