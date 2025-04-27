@@ -61,12 +61,14 @@ const server = net.createServer((socket) => {
         fs.readFileSync(filepath,'utf-8',(err,data)=>{
             console.log("_",data);
             if(!err){
+               console.log('-----');
                 contentLen = data.length;
                 contentVal = data;
                 socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${contentLen}\r\n\r\n${contentVal}}`);
             }
         })
       }
+      console.log(" ............ ");
       socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
     }
   })
