@@ -57,8 +57,11 @@ const server = net.createServer((socket) => {
         console.log(" in file route",parentRoute,currRoute);
         let contentLen = parentRoute.length + currRoute.length;
         let contentVal = currRoute;
+        console.log(" filepath ",filepath);
         fs.readFile(filepath,'utf-8',(data)=>{
+            console.log("_",data);
             if(data){
+                
                 contentLen = data.length;
                 contentVal = data;
                 socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${contentLen}\r\n\r\n${contentVal}}`);
