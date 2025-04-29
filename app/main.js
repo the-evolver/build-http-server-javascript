@@ -18,9 +18,9 @@ if(process.argv.indexOf("--directory") != -1 && process.argv[process.argv.indexO
   directoryPath = process.argv[process.argv.indexOf("--directory") + 1];
 }
 
-const compressHelper = async(echoRes) => {
+const compressHelper = (echoRes) => {
   console.log('compression started ....');
-  await zlib.gzip(echoRes,(err,buffer)=> {
+  zlib.gzipSync(echoRes,(err,buffer)=> {
               
     if(err){
       console.log(" error occured while compressing to gzip ",buffer.toString('hex'));
@@ -82,7 +82,7 @@ const server = net.createServer((socket) => {
            if(compress){
             console.log('in compress ..');
             console.log("before compress ",echoRes);
-            echoRes = await compressHelper(echoRes);
+            echoRes = compressHelper(echoRes);
             console.log("after compress ",echoRes);
            }
         
