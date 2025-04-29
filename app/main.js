@@ -34,12 +34,12 @@ const compressHelper = (echoRes) => {
         reject('');
       }
          console.log(" data compressed ",buffer);
-         console.log(buffer.toString('ascii'));
-         console.log(buffer.toString('base64'));
-         console.log(buffer.toString('base64url'));
-         console.log(buffer.toString('binary'));
-         console.log(buffer.toString('hex'));
-         console.log(buffer.toString('utf-8'));
+        //  console.log(buffer.toString('ascii'));
+        //  console.log(buffer.toString('base64'));
+        //  console.log(buffer.toString('base64url'));
+        //  console.log(buffer.toString('binary'));
+        //  console.log(buffer.toString('hex'));
+        //  console.log(buffer.toString('utf-8'));
          resolve(buffer);
       
     });   
