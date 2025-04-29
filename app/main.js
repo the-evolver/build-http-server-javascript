@@ -31,6 +31,8 @@ const server = net.createServer((socket) => {
           let echoRes = reqRoute.split('/')[2] || '';
           if(echoRes){
             socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${echoRes.length}\r\n\r\n${echoRes}`);
+          }else{
+            socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
           }
       }
       else if(parentRoute == 'user-agent'){
@@ -47,8 +49,10 @@ const server = net.createServer((socket) => {
         }
         console.log(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${userAgentStr.length}\r\n\r\n${userAgentStr}`)
         if(userAgentStr){
-          
           socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${userAgentStr.length}\r\n\r\n${userAgentStr}`)
+        }
+        else{
+          socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
         }
       }else if(parentRoute == 'files'){
         console.log("process.argv ",process.argv);
@@ -60,7 +64,10 @@ const server = net.createServer((socket) => {
         console.log(" filepath ",filepath);
         const readFile = await fs.readFile(filepath,'utf-8',(err,data)=>{
             console.log("_",data);
-            if(!err){
+            if(err){
+              socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+            }
+            else{
                console.log('-----');
                 contentLen = data.length;
                 contentVal = data;
@@ -68,8 +75,8 @@ const server = net.createServer((socket) => {
             }
         })
       }
-      console.log(" ............ ");
-      socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+      
+      
     }
   })
 
