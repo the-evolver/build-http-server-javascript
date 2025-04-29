@@ -70,7 +70,7 @@ const server = net.createServer((socket) => {
                 console.log(" error occured while compressing to gzip ",buffer.toString('base64'))
               }else{
                  echoRes = buffer;
-                 console.log(" data compressed ",buffer);
+                 console.log(" data compressed ",buffer.toString('base64'));
               }
             })    
            }
