@@ -29,8 +29,8 @@ const compressHelper = (echoRes) => {
         console.log(" error occured while compressing to gzip ",buffer.toString('hex'));
         reject('');
       }
-         console.log(" data compressed ",buffer.toString('utf8'));
-         resolve(buffer.toString('utf8'));
+         console.log(" data compressed ",buffer);
+         resolve(buffer);
       
     });   
     console.log(" 🚨 🚨 🚨 🚨 🚨 🚨 🚨    ");
