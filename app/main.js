@@ -74,6 +74,9 @@ const server = net.createServer((socket) => {
                 socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${contentLen}\r\n\r\n${contentVal}}`);
             }
         })
+      }else{
+        console.log(" Not in echo,user-agent,file route ... no route found ...");
+        socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
       }
       
       
