@@ -66,6 +66,7 @@ const server = net.createServer((socket) => {
             console.log(" encoding header ........ ",encodingHeader);
            if(compress){
             console.log('in compress ..');
+            console.log("before compress ",echoRes);
             zlib.gzip(echoRes,(err,buffer)=> {
               
               if(err){
