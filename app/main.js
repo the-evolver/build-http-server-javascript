@@ -6,8 +6,10 @@ const fs = require('fs');
 //console.log("Logs from your program will appear here!");
 //TODO: How js handles events such that Concurrent connections are managed by default ...
 
-let directoryPath = null;
+let directoryPath = __dirname;
 let filepath = null;
+let requestType = null;
+let requestBody = null;
 if(process.argv.indexOf("--directory") != -1 && process.argv[process.argv.indexOf("--directory") + 1]){
   directoryPath = process.argv[process.argv.indexOf("--directory") + 1];
 }
@@ -15,12 +17,18 @@ if(process.argv.indexOf("--directory") != -1 && process.argv[process.argv.indexO
 const server = net.createServer((socket) => {
    
   socket.on('data',async (data)=> {
-    console.log(" data ... ", data.toString() );
+    console.log(" data =>  ", data.toString() );
     const dataStr = data.toString();
     let dataSplit  = dataStr.split(' ');
     let reqRoute = dataSplit[1];
+    requestType = dataSplit[0];
+    requestBody = dataStr.split('\n')[dataStr.split('\n').length - 2];
+    console.log(" request type  ",requestType);
+    console.log(" request body ",requestBody);
+    console.log(" ⛔️ ⛔️ ⛔️ ⛔️ ⛔️   ");
    
     if(reqRoute.length == 1){
+      
       console.log(" In basic / get route ....");
       socket.write('HTTP/1.1 200 OK\r\n\r\n');
       
@@ -58,11 +66,14 @@ const server = net.createServer((socket) => {
         console.log("process.argv ",process.argv);
         let currRoute = reqRoute.split('/')[2];
         filepath = path.join(directoryPath,currRoute);
-        console.log(" in file route",parentRoute,currRoute);
+        
+
+        if(requestType == 'GET'){
+        console.log(" in file route GET ",parentRoute,currRoute);
         let contentLen = parentRoute.length + currRoute.length;
         let contentVal = currRoute;
         console.log(" filepath ",filepath);
-        const readFile = await fs.readFile(filepath,'utf-8',(err,data)=>{
+        fs.readFile(filepath,'utf-8',(err,data)=>{
             console.log("_",data);
             if(err){
               socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
@@ -74,6 +85,20 @@ const server = net.createServer((socket) => {
                 socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${contentLen}\r\n\r\n${contentVal}}`);
             }
         })
+
+        }else if (requestType == 'POST'){
+        console.log(" in file route POST",parentRoute,currRoute);
+         // create file with request body content and return response ....
+         fs.writeFile(filepath,requestBody,(err) => {
+              if(err){
+                socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+              }else{
+                socket.write('HTTP/1.1 201 Created\r\n\r\n');
+              }
+         })
+
+        }
+        
       }else{
         console.log(" Not in echo,user-agent,file route ... no route found ...");
         socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
@@ -81,8 +106,11 @@ const server = net.createServer((socket) => {
       
       
     }
-  })
+    console.log(' ---------------- ::: ');
+    
 
+  })
+   console.log("++++++");
 });
 
 server.listen(4221, "localhost");
