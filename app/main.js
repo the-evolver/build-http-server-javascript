@@ -24,7 +24,7 @@ const compressHelper = async(echoRes) => {
               
     if(err){
       console.log(" error occured while compressing to gzip ",buffer.toString('hex'));
-      return;
+      return '';
     }
        console.log(" data compressed ",buffer.toString('hex'));
        return buffer.toString('hex');
@@ -83,6 +83,7 @@ const server = net.createServer((socket) => {
             console.log('in compress ..');
             console.log("before compress ",echoRes);
             echoRes = await compressHelper(echoRes);
+            console.log("after compress ",echoRes);
            }
         
             socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${echoRes.length}\r\n${encodingHeader}\r\n${echoRes}`);
