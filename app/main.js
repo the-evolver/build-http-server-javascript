@@ -1,6 +1,7 @@
 const net = require("net");
 const path = require('path')
 const fs = require('fs');
+const zlib = require('zlib');
 
 //console.log(" net ",net);
 //console.log("Logs from your program will appear here!");
@@ -63,6 +64,17 @@ const server = net.createServer((socket) => {
           if(echoRes){
             let encodingHeader = compress ? `Content-Encoding: ${compressFormat}\r\n`:"" ;
             console.log(" encoding header ........ ",encodingHeader);
+           if(compress){
+            zlib.gzip(echoRes,(err,buffer)=> {
+              if(err){
+                console.log(" error occured while compressing to gzip ",buffer.toString('base64'))
+              }else{
+                 echoRes = buffer;
+                 console.log(" data compressed ",buffer);
+              }
+            })    
+           }
+        
             socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${echoRes.length}\r\n${encodingHeader}\r\n${echoRes}`);
           }else{
             socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
