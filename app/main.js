@@ -65,7 +65,9 @@ const server = net.createServer((socket) => {
             let encodingHeader = compress ? `Content-Encoding: ${compressFormat}\r\n`:"" ;
             console.log(" encoding header ........ ",encodingHeader);
            if(compress){
+            console.log('in compress ..');
             zlib.gzip(echoRes,(err,buffer)=> {
+              
               if(err){
                 console.log(" error occured while compressing to gzip ",buffer.toString('base64'))
               }else{
