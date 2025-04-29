@@ -70,10 +70,10 @@ const server = net.createServer((socket) => {
             zlib.gzip(echoRes,(err,buffer)=> {
               
               if(err){
-                console.log(" error occured while compressing to gzip ",buffer.toString('base64'))
+                console.log(" error occured while compressing to gzip ",buffer.toString('hex'))
               }else{
-                 echoRes = buffer.toString('base64');
-                 console.log(" data compressed ",buffer.toString('base64'));
+                 echoRes = buffer.toString('hex');
+                 console.log(" data compressed ",buffer.toString('hex'));
               }
             })    
            }
