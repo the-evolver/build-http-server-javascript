@@ -23,6 +23,7 @@ const server = net.createServer((socket) => {
     let reqRoute = dataSplit[1];
     requestType = dataSplit[0];
     requestBody = dataStr.split('\n')[dataStr.split('\n').length - 2];
+    console.log(" split data ",dataStr.split('\n'));
     console.log(" request type  ",requestType);
     console.log(" request body ",requestBody);
     console.log(" ⛔️ ⛔️ ⛔️ ⛔️ ⛔️   ");
