@@ -62,7 +62,7 @@ const server = net.createServer((socket) => {
           
           if(echoRes){
             let encodingHeader = compress ? `Content-Encoding: ${compressFormat}\r\n`:"" ;
-            console.log(" encoding header .... ",encodingHeader);
+            console.log(" encoding header ........ ",encodingHeader);
             socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${echoRes.length}\r\n${encodingHeader}\r\n${echoRes}`);
           }else{
             socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
