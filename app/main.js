@@ -23,14 +23,24 @@ const compressHelper = (echoRes) => {
   console.log('compression started ....',echoRes);
   
   return new Promise((resolve,reject) => {
-    zlib.gzip(echoRes,(err,buffer)=> {
+    zlib.gzip(echoRes,{
+      level: zlib.constants.Z_BEST_SPEED,
+      memLevel: zlib.constants.Z_BEST_SPEED,
+      timestamp: 0 // This ensures the header is deterministic
+    },(err,buffer)=> {
               
       if(err){
         console.log(" error occured while compressing to gzip ",buffer.toString('hex'));
         reject('');
       }
-         console.log(" data compressed ",buffer.toString('base64'));
-         resolve(buffer.toString('base64'));
+         console.log(" data compressed ",buffer);
+         console.log(buffer.toString('ascii'));
+         console.log(buffer.toString('base64'));
+         console.log(buffer.toString('base64url'));
+         console.log(buffer.toString('binary'));
+         console.log(buffer.toString('hex'));
+         console.log(buffer.toString('utf-8'));
+         resolve(buffer);
       
     });   
     console.log(" 🚨 🚨 🚨 🚨 🚨 🚨 🚨    ");
@@ -90,7 +100,7 @@ const server = net.createServer((socket) => {
             console.log("after compress ",echoRes);
            }
         
-            socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${echoRes.length}\r\n${encodingHeader}\r\n${echoRes}`);
+            socket.write(`HTTP/1.1 200 OK\r\n${encodingHeader}Content-Type: text/plain\r\nContent-Length: ${echoRes.length}\r\n\r\n${echoRes}`);
           }else{
             socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
           }
