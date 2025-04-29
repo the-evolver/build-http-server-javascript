@@ -55,7 +55,7 @@ const server = net.createServer((socket) => {
             ServerSupportedEncodings.forEach((sEncoding) => {
               if(cEnconding == sEncoding){
                 compress = true;
-                compressFormat = clientSupportedEncodings;
+                compressFormat = cEnconding;
               }
             })
           })
