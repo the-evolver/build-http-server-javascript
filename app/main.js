@@ -100,7 +100,8 @@ const server = net.createServer((socket) => {
             console.log("after compress ",echoRes);
            }
         
-            socket.write(`HTTP/1.1 200 OK\r\n${encodingHeader}Content-Type: text/plain\r\nContent-Length: ${echoRes.length}\r\n\r\n${echoRes}`);
+            socket.write(`HTTP/1.1 200 OK\r\n${encodingHeader}Content-Type: text/plain\r\nContent-Length: ${echoRes.length}\r\n\r\n`);
+            socket.write(echoRes);
           }else{
             socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
           }
