@@ -20,7 +20,7 @@ if(process.argv.indexOf("--directory") != -1 && process.argv[process.argv.indexO
 
 const compressHelper = async(echoRes) => {
   console.log('compression started ....');
-  zlib.gzip(echoRes,(err,buffer)=> {
+  await zlib.gzip(echoRes,(err,buffer)=> {
               
     if(err){
       console.log(" error occured while compressing to gzip ",buffer.toString('hex'));
