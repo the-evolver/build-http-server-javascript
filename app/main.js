@@ -3,6 +3,7 @@ const path = require('path')
 const fs = require('fs');
 const zlib = require('zlib');
 
+
 //console.log(" net ",net);
 //console.log("Logs from your program will appear here!");
 //TODO: How js handles events such that Concurrent connections are managed by default ...
@@ -21,17 +22,19 @@ if(process.argv.indexOf("--directory") != -1 && process.argv[process.argv.indexO
 const compressHelper = (echoRes) => {
   console.log('compression started ....',echoRes);
   
-  zlib.gzipSync(echoRes,(err,buffer)=> {
+  return new Promise((resolve,reject) => {
+    zlib.gzip(echoRes,(err,buffer)=> {
               
-    if(err){
-      console.log(" error occured while compressing to gzip ",buffer.toString('hex'));
-      return '';
-    }
-       console.log(" data compressed ",buffer.toString('hex'));
-       return buffer.toString('hex');
-    
-  })    
-  console.log(" 🚨 🚨 🚨 🚨 🚨 🚨 🚨    ");
+      if(err){
+        console.log(" error occured while compressing to gzip ",buffer.toString('hex'));
+        reject('');
+      }
+         console.log(" data compressed ",buffer.toString('hex'));
+         resolve(buffer.toString('hex'));
+      
+    });   
+    console.log(" 🚨 🚨 🚨 🚨 🚨 🚨 🚨    ");
+  })
 }
 
 const server = net.createServer((socket) => {
@@ -83,7 +86,7 @@ const server = net.createServer((socket) => {
            if(compress){
             console.log('in compress ..');
             console.log("before compress ",echoRes);
-            echoRes = compressHelper(echoRes);
+            echoRes = await compressHelper(echoRes);
             console.log("after compress ",echoRes);
            }
         
@@ -163,3 +166,17 @@ const server = net.createServer((socket) => {
 });
 
 server.listen(4221, "localhost");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
