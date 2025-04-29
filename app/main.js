@@ -10,6 +10,9 @@ let directoryPath = __dirname;
 let filepath = null;
 let requestType = null;
 let requestBody = null;
+let clientSupportedEncodings = [];
+let ServerSupportedEncodings = ['gzip'];
+
 if(process.argv.indexOf("--directory") != -1 && process.argv[process.argv.indexOf("--directory") + 1]){
   directoryPath = process.argv[process.argv.indexOf("--directory") + 1];
 }
@@ -22,7 +25,15 @@ const server = net.createServer((socket) => {
     let dataSplit  = dataStr.split(' ');
     let reqRoute = dataSplit[1];
     requestType = dataSplit[0];
+    //TODO: MAKE FETCHING REQUEST BODY MORE ROBOUST .. CURENLTY IF IN REQUEST BODY WE ADD NEW LINE AT END IT WILL NOT BREAK THE LOGIC WHICH SHOULDNT ....
     requestBody = dataStr.split('\n')[dataStr.split('\n').length - 1];
+    for(let str of dataStr.split('\n')){
+      if(str.startsWith('Accept-Encoding')){
+          clientSupportedEncodings = str.split(':')[1].split(',');
+          clientSupportedEncodings = clientSupportedEncodings.map((currEl) => currEl.trim());
+      }
+    }
+    console.log(" clientSupportedEncodings ",clientSupportedEncodings);
     console.log(" split data ",dataStr.split('\n'));
     console.log(" request type  ",requestType);
     console.log(" request body ",requestBody);
@@ -38,8 +49,20 @@ const server = net.createServer((socket) => {
       if( parentRoute == 'echo'){
           console.log(" In basic /echo get route ....");
           let echoRes = reqRoute.split('/')[2] || '';
+          let compress = false;
+          let compressFormat = null;
+          clientSupportedEncodings.forEach((cEnconding) => {
+            ServerSupportedEncodings.forEach((sEncoding) => {
+              if(cEnconding == sEncoding){
+                compress = true;
+                compressFormat = clientSupportedEncodings;
+              }
+            })
+          })
+          
           if(echoRes){
-            socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${echoRes.length}\r\n\r\n${echoRes}`);
+            let encodingHeader = compress ? `Accept-Encoding: ${compressFormat}`:"" ;
+            socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${echoRes.length}\r\n${encodingHeader}\r\n${echoRes}`);
           }else{
             socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
           }
