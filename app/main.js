@@ -19,7 +19,7 @@ if(process.argv.indexOf("--directory") != -1 && process.argv[process.argv.indexO
 }
 
 const compressHelper = (echoRes) => {
-  console.log('compression started ....');
+  console.log('compression started ....',echoRes);
   zlib.gzipSync(echoRes,(err,buffer)=> {
               
     if(err){
