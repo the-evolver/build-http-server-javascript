@@ -18,6 +18,21 @@ if(process.argv.indexOf("--directory") != -1 && process.argv[process.argv.indexO
   directoryPath = process.argv[process.argv.indexOf("--directory") + 1];
 }
 
+const compressHelper = async(echoRes) => {
+  console.log('compression started ....');
+  zlib.gzip(echoRes,(err,buffer)=> {
+              
+    if(err){
+      console.log(" error occured while compressing to gzip ",buffer.toString('hex'));
+      return;
+    }
+       console.log(" data compressed ",buffer.toString('hex'));
+       return buffer.toString('hex');
+    
+  })    
+
+}
+
 const server = net.createServer((socket) => {
    
   socket.on('data',async (data)=> {
@@ -67,15 +82,7 @@ const server = net.createServer((socket) => {
            if(compress){
             console.log('in compress ..');
             console.log("before compress ",echoRes);
-            zlib.gzip(echoRes,(err,buffer)=> {
-              
-              if(err){
-                console.log(" error occured while compressing to gzip ",buffer.toString('hex'))
-              }else{
-                 echoRes = buffer.toString('hex');
-                 console.log(" data compressed ",buffer.toString('hex'));
-              }
-            })    
+            echoRes = await compressHelper(echoRes);
            }
         
             socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${echoRes.length}\r\n${encodingHeader}\r\n${echoRes}`);
