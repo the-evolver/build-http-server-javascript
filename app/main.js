@@ -60,7 +60,7 @@ const customResponse  = (responseCode,responseMessage,headers = [] ,responseBody
   
   // write to socket
   console.log("response str",responseStr);
-  console.log("curr active socket ",currActiveSocket);
+ 
   currActiveSocket.write(responseStr);
 }
 
