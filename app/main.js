@@ -37,7 +37,7 @@ const compressHelper = (echoRes) => {
   })
 }
 
-const customResponse  = (responseCode,responseMessage,headers = null ,responseBody = null) => {
+const customResponse  = (responseCode,responseMessage,headers = [] ,responseBody = null) => {
   let responseStr = '';
   if(connectionHeaderRequest == 'close'){
     headers.push('Connection: close');
@@ -46,10 +46,10 @@ const customResponse  = (responseCode,responseMessage,headers = null ,responseBo
     console.log(" No active channel to send response please activate the socket first .... ");
     return;
   }
-  if(headers == null && responseBody == null){
+  if(headers.length == 0 && responseBody == null){
        responseStr = `HTTP/1.1 ${responseCode} ${responseMessage}\r\n\r\n`;
   }
-  else if(responseCode == null && responseMessage == null && headers == null && responseBody != null){
+  else if(responseCode == null && responseMessage == null && headers.length == 0 && responseBody != null){
     responseStr = responseBody;
     
   }else{
@@ -121,7 +121,7 @@ const server = net.createServer((socket) => {
            }
             customResponse(200,'OK',[encodingHeader,'Content-Type: text/plain',`Content-Length: ${echoRes.length}`])
             // socket.write(`HTTP/1.1 200 OK\r\n${encodingHeader}Content-Type: text/plain\r\nContent-Length: ${echoRes.length}\r\n\r\n`);
-             customResponse(null,null,null,echoRes);
+             customResponse(null,null,[],echoRes);
             // socket.write(echoRes);
           }else{
             customResponse(404,'Not Found');
