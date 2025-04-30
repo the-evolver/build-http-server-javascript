@@ -128,7 +128,7 @@ const server = net.createServer((socket) => {
             customResponse(null,null,[],echoRes);
            }else{
             console.log("3");
-            customResponse(200,'OK',[encodingHeader,'Content-Type: text/plain',`Content-Length: ${echoRes.length}`],echoRes);
+            customResponse(200,'OK',['Content-Type: text/plain',`Content-Length: ${echoRes.length}`],echoRes);
            }
             
           }else{
