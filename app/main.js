@@ -53,7 +53,7 @@ const customResponse  = (responseCode,responseMessage,headers = [] ,responseBody
     responseStr = responseBody;
     
   }else{
-    console.log(" -- in else ... ",headers,headers.join('\r\n'));
+    console.log(" -- in else .... ",headers,headers.join('\r\n'));
     responseStr = `HTTP/1.1 ${responseCode} ${responseMessage}\r\n${headers.join('\r\n')}\r\n\r\n` ;
     if(responseBody != ''){
       responseStr += responseBody;
@@ -61,7 +61,7 @@ const customResponse  = (responseCode,responseMessage,headers = [] ,responseBody
   }
   
   // write to socket
-  console.log(" response str",responseStr);
+  console.log("response str",responseStr);
   currActiveSocket.write(responseStr);
 }
 
