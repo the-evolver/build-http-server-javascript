@@ -122,11 +122,12 @@ const server = net.createServer((socket) => {
             console.log("before compress ",echoRes);
             echoRes = await compressHelper(echoRes);
             console.log("after compress ",echoRes);
+            customResponse(200,'OK',[encodingHeader,'Content-Type: text/plain',`Content-Length: ${echoRes.length}`]);
+            customResponse(null,null,[],echoRes);
+           }else{
+            customResponse(200,'OK',[encodingHeader,'Content-Type: text/plain',`Content-Length: ${echoRes.length}`],echoRes);
            }
-            customResponse(200,'OK',[encodingHeader,'Content-Type: text/plain',`Content-Length: ${echoRes.length}`])
-            // socket.write(`HTTP/1.1 200 OK\r\n${encodingHeader}Content-Type: text/plain\r\nContent-Length: ${echoRes.length}\r\n\r\n`);
-             customResponse(null,null,[],echoRes);
-            // socket.write(echoRes);
+            
           }else{
             customResponse(404,'Not Found');
             //socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
