@@ -203,6 +203,7 @@ const server = net.createServer((socket) => {
 
   })
    if(connectionHeaderRequest == 'close'){
+    console.log(" --- destroy ...");
     socket.end();
    }
 });
