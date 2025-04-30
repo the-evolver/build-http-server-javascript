@@ -203,13 +203,13 @@ const server = net.createServer((socket) => {
       
     }
     console.log(' ---------------- ::: ');
-    
+    if(connectionHeaderRequest == 'close'){
+      console.log(" --- destroy ...");
+      socket.end();
+     }
 
   })
-   if(connectionHeaderRequest == 'close'){
-    console.log(" --- destroy ...");
-    socket.end();
-   }
+   
 });
 
 server.listen(4221, "localhost");
