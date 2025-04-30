@@ -49,7 +49,7 @@ const customResponse  = (responseCode,responseMessage,headers = [] ,responseBody
   if(headers.length == 0 && responseBody == ''){
        responseStr = `HTTP/1.1 ${responseCode} ${responseMessage}\r\n\r\n`;
   }
-  else if(responseCode == null && responseMessage == null && headers.length == 0 && responseBody != null){
+  else if(responseCode == null && responseMessage == null ){
     responseStr = responseBody;
     
   }else{
