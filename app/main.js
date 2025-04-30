@@ -4,17 +4,13 @@ const fs = require('fs');
 const zlib = require('zlib');
 
 
-//console.log(" net ",net);
-//console.log("Logs from your program will appear here!");
-//TODO: How js handles events such that Concurrent connections are managed by default ...
-
 let directoryPath = __dirname;
 let filepath = null;
 let requestType = null;
 let requestBody = null;
 let clientSupportedEncodings = [];
 let ServerSupportedEncodings = ['gzip'];
-
+let connectionHeaderRequest = '';
 if(process.argv.indexOf("--directory") != -1 && process.argv[process.argv.indexOf("--directory") + 1]){
   directoryPath = process.argv[process.argv.indexOf("--directory") + 1];
 }
@@ -34,17 +30,27 @@ const compressHelper = (echoRes) => {
         reject('');
       }
          console.log(" data compressed ",buffer);
-        //  console.log(buffer.toString('ascii'));
-        //  console.log(buffer.toString('base64'));
-        //  console.log(buffer.toString('base64url'));
-        //  console.log(buffer.toString('binary'));
-        //  console.log(buffer.toString('hex'));
-        //  console.log(buffer.toString('utf-8'));
          resolve(buffer);
       
     });   
-    console.log(" 🚨 🚨 🚨 🚨 🚨 🚨 🚨    ");
   })
+}
+
+const customResponse  = (responseCode,responseMessage,headers = null ,responseBody = null) => {
+  let responseStr = '';
+
+  if(headers == null && responseBody == null){
+       responseStr = `HTTP/1.1 ${responseCode} ${responseMessage}\r\n\r\n`;
+  }
+  else if(responseCode == null && responseMessage == null && headers == null && responseBody != null){
+    responseStr = responseBody;
+    
+  }else{
+    responseStr = `HTTP/1.1 ${responseCode} ${responseMessage}\r\n${headers.join('\r\n')}\r\n\r\n${responseBody}`;
+  }
+  
+  // write to socket
+  socket.write(responseStr);
 }
 
 const server = net.createServer((socket) => {
@@ -57,22 +63,28 @@ const server = net.createServer((socket) => {
     requestType = dataSplit[0];
     //TODO: MAKE FETCHING REQUEST BODY MORE ROBOUST .. CURENLTY IF IN REQUEST BODY WE ADD NEW LINE AT END IT WILL NOT BREAK THE LOGIC WHICH SHOULDNT ....
     requestBody = dataStr.split('\n')[dataStr.split('\n').length - 1];
+    
     for(let str of dataStr.split('\n')){
       if(str.startsWith('Accept-Encoding')){
           clientSupportedEncodings = str.split(':')[1].split(',');
           clientSupportedEncodings = clientSupportedEncodings.map((currEl) => currEl.trim());
       }
+      if(str.startsWith('Connection')){
+        connectionHeaderRequest = str.split(':')[1].trim();
+    }
     }
     console.log(" clientSupportedEncodings ",clientSupportedEncodings);
     console.log(" split data ",dataStr.split('\n'));
     console.log(" request type  ",requestType);
     console.log(" request body ",requestBody);
+    console.log(" connection Header Request ",connectionHeaderRequest);
     console.log(" ⛔️ ⛔️ ⛔️ ⛔️ ⛔️   ");
    
     if(reqRoute.length == 1){
       
       console.log(" In basic / get route ....");
-      socket.write('HTTP/1.1 200 OK\r\n\r\n');
+      //socket.write('HTTP/1.1 200 OK\r\n\r\n');
+      customResponse(200,'OK');
       
     }else{
       let parentRoute = reqRoute.split('/')[1];
@@ -99,11 +111,13 @@ const server = net.createServer((socket) => {
             echoRes = await compressHelper(echoRes);
             console.log("after compress ",echoRes);
            }
-        
-            socket.write(`HTTP/1.1 200 OK\r\n${encodingHeader}Content-Type: text/plain\r\nContent-Length: ${echoRes.length}\r\n\r\n`);
-            socket.write(echoRes);
+            customResponse(200,'OK',[encodingHeader,'Content-Type: text/plain',`Content-Length: ${echoRes.length}`])
+            // socket.write(`HTTP/1.1 200 OK\r\n${encodingHeader}Content-Type: text/plain\r\nContent-Length: ${echoRes.length}\r\n\r\n`);
+             customResponse(null,null,null,echoRes);
+            // socket.write(echoRes);
           }else{
-            socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+            customResponse(404,'Not Found');
+            //socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
           }
       }
       else if(parentRoute == 'user-agent'){
@@ -118,12 +132,14 @@ const server = net.createServer((socket) => {
                 break;
             }
         }
-        console.log(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${userAgentStr.length}\r\n\r\n${userAgentStr}`)
+        // console.log(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${userAgentStr.length}\r\n\r\n${userAgentStr}`)
         if(userAgentStr){
-          socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${userAgentStr.length}\r\n\r\n${userAgentStr}`)
+          customResponse(200,'OK',['Content-Type: text/plain',`Content-Length: ${userAgentStr.length}`],userAgentStr);
+          // socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${userAgentStr.length}\r\n\r\n${userAgentStr}`)
         }
         else{
-          socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+          customResponse(404,'Not Found');
+          //socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
         }
       }else if(parentRoute == 'files'){
         console.log("process.argv ",process.argv);
@@ -139,13 +155,15 @@ const server = net.createServer((socket) => {
         fs.readFile(filepath,'utf-8',(err,data)=>{
             console.log("_",data);
             if(err){
-              socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+              customResponse(404,'Not Found');
+              //socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
             }
             else{
                console.log('-----');
                 contentLen = data.length;
                 contentVal = data;
-                socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${contentLen}\r\n\r\n${contentVal}}`);
+                customResponse(200,'OK',['Content-Type: application/octet-stream',`Content-Length: ${contentLen}`],contentVal);
+                // socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${contentLen}\r\n\r\n${contentVal}}`);
             }
         })
 
@@ -154,9 +172,11 @@ const server = net.createServer((socket) => {
          // create file with request body content and return response ....
          fs.writeFile(filepath,requestBody,(err) => {
               if(err){
-                socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+                customResponse(404,'Not Found');
+                //socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
               }else{
-                socket.write('HTTP/1.1 201 Created\r\n\r\n');
+                customResponse(201,'Created');
+                //socket.write('HTTP/1.1 201 Created\r\n\r\n');
               }
          })
 
@@ -164,7 +184,8 @@ const server = net.createServer((socket) => {
         
       }else{
         console.log(" Not in echo,user-agent,file route ... no route found ...");
-        socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+        customResponse(404,'Not Found');
+        //socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
       }
       
       
@@ -173,7 +194,9 @@ const server = net.createServer((socket) => {
     
 
   })
-   console.log("++++++");
+   if(connectionHeaderRequest == 'close'){
+    socket.end();
+   }
 });
 
 server.listen(4221, "localhost");
