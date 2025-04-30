@@ -96,6 +96,7 @@ const server = net.createServer((socket) => {
       
       console.log(" In basic / get route ....");
       //socket.write('HTTP/1.1 200 OK\r\n\r\n');
+      console.log("1");
       customResponse(200,'OK');
       
     }else{
@@ -122,13 +123,16 @@ const server = net.createServer((socket) => {
             console.log("before compress ",echoRes);
             echoRes = await compressHelper(echoRes);
             console.log("after compress ",echoRes);
+            console.log("2");
             customResponse(200,'OK',[encodingHeader,'Content-Type: text/plain',`Content-Length: ${echoRes.length}`]);
             customResponse(null,null,[],echoRes);
            }else{
+            console.log("3");
             customResponse(200,'OK',[encodingHeader,'Content-Type: text/plain',`Content-Length: ${echoRes.length}`],echoRes);
            }
             
           }else{
+            console.log("4");
             customResponse(404,'Not Found');
             //socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
           }
@@ -147,10 +151,12 @@ const server = net.createServer((socket) => {
         }
         // console.log(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${userAgentStr.length}\r\n\r\n${userAgentStr}`)
         if(userAgentStr){
+          console.log("5");
           customResponse(200,'OK',['Content-Type: text/plain',`Content-Length: ${userAgentStr.length}`],userAgentStr);
           // socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${userAgentStr.length}\r\n\r\n${userAgentStr}`)
         }
         else{
+          console.log("6");
           customResponse(404,'Not Found');
           //socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
         }
@@ -175,6 +181,7 @@ const server = net.createServer((socket) => {
                console.log('-----');
                 contentLen = data.length;
                 contentVal = data;
+                console.log("7");
                 customResponse(200,'OK',['Content-Type: application/octet-stream',`Content-Length: ${contentLen}`],contentVal);
                 // socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${contentLen}\r\n\r\n${contentVal}}`);
             }
@@ -188,6 +195,7 @@ const server = net.createServer((socket) => {
                 customResponse(404,'Not Found');
                 //socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
               }else{
+                console.log("8");
                 customResponse(201,'Created');
                 //socket.write('HTTP/1.1 201 Created\r\n\r\n');
               }
