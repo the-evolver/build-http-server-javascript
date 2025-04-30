@@ -37,7 +37,7 @@ const compressHelper = (echoRes) => {
   })
 }
 
-const customResponse  = (responseCode,responseMessage,headers = [] ,responseBody = null) => {
+const customResponse  = (responseCode,responseMessage,headers = [] ,responseBody ='') => {
   let responseStr = '';
   if(connectionHeaderRequest == 'close'){
     headers.push('Connection: close');
@@ -46,18 +46,22 @@ const customResponse  = (responseCode,responseMessage,headers = [] ,responseBody
     console.log(" No active channel to send response please activate the socket first .... ");
     return;
   }
-  if(headers.length == 0 && responseBody == null){
+  if(headers.length == 0 && responseBody == ''){
        responseStr = `HTTP/1.1 ${responseCode} ${responseMessage}\r\n\r\n`;
   }
   else if(responseCode == null && responseMessage == null && headers.length == 0 && responseBody != null){
     responseStr = responseBody;
     
   }else{
-    responseStr = `HTTP/1.1 ${responseCode} ${responseMessage}\r\n${headers.join('\r\n')}\r\n\r\n${responseBody}`;
+    console.log(" -- in else ... ",headers,headers.join('\r\n'));
+    responseStr = `HTTP/1.1 ${responseCode} ${responseMessage}\r\n${headers.join('\r\n')}\r\n\r\n` ;
+    if(responseBody != ''){
+      responseStr += responseBody;
+    }
   }
   
   // write to socket
-  
+  console.log(" response str",responseStr);
   currActiveSocket.write(responseStr);
 }
 
@@ -111,7 +115,7 @@ const server = net.createServer((socket) => {
           })
           
           if(echoRes){
-            let encodingHeader = compress ? `Content-Encoding: ${compressFormat}\r\n`:"" ;
+            let encodingHeader = compress ? `Content-Encoding: ${compressFormat}`:"" ;
             console.log(" encoding header ........ ",encodingHeader);
            if(compress){
             console.log('in compress ..');
