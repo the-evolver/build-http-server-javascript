@@ -11,6 +11,7 @@ let requestBody = null;
 let clientSupportedEncodings = [];
 let ServerSupportedEncodings = ['gzip'];
 let connectionHeaderRequest = '';
+let currActiveSocket = null;
 if(process.argv.indexOf("--directory") != -1 && process.argv[process.argv.indexOf("--directory") + 1]){
   directoryPath = process.argv[process.argv.indexOf("--directory") + 1];
 }
@@ -38,7 +39,10 @@ const compressHelper = (echoRes) => {
 
 const customResponse  = (responseCode,responseMessage,headers = null ,responseBody = null) => {
   let responseStr = '';
-
+  if(!currActiveSocket){
+    console.log(" No active channel to send response please activate the socket first .... ");
+    return;
+  }
   if(headers == null && responseBody == null){
        responseStr = `HTTP/1.1 ${responseCode} ${responseMessage}\r\n\r\n`;
   }
@@ -50,11 +54,12 @@ const customResponse  = (responseCode,responseMessage,headers = null ,responseBo
   }
   
   // write to socket
-  socket.write(responseStr);
+  
+  currActiveSocket.write(responseStr);
 }
 
 const server = net.createServer((socket) => {
-   
+  currActiveSocket = socket;
   socket.on('data',async (data)=> {
     console.log(" data =>  ", data.toString() );
     const dataStr = data.toString();
