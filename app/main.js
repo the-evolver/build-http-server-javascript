@@ -39,6 +39,9 @@ const compressHelper = (echoRes) => {
 
 const customResponse  = (responseCode,responseMessage,headers = null ,responseBody = null) => {
   let responseStr = '';
+  if(connectionHeaderRequest == 'close'){
+    headers.push('Connection: close');
+  }
   if(!currActiveSocket){
     console.log(" No active channel to send response please activate the socket first .... ");
     return;
