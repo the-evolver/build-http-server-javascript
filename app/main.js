@@ -37,7 +37,7 @@ const compressHelper = (echoRes) => {
   })
 }
 
-const customResponse  = (responseCode,responseMessage,headers = [] ,responseBody ='') => {
+const customResponse  = (responseCode,responseMessage,headers = [] ,responseBody = '') => {
   let responseStr = '';
   if(connectionHeaderRequest == 'close'){
     headers.push('Connection: close');
@@ -48,20 +48,19 @@ const customResponse  = (responseCode,responseMessage,headers = [] ,responseBody
   }
   if(headers.length == 0 && responseBody == ''){
        responseStr = `HTTP/1.1 ${responseCode} ${responseMessage}\r\n\r\n`;
-  }
-  else if(responseCode == null && responseMessage == null ){
-    responseStr = responseBody;
-    
+  }else if(responseCode == null && responseMessage == null ){
+       responseStr = responseBody;
   }else{
-    console.log(" -- in else .... ",headers,headers.join('\r\n'));
-    responseStr = `HTTP/1.1 ${responseCode} ${responseMessage}\r\n${headers.join('\r\n')}\r\n\r\n` ;
+        console.log(" -- in else .... ",headers,headers.join('\r\n'));
+        responseStr = `HTTP/1.1 ${responseCode} ${responseMessage}\r\n${headers.join('\r\n')}\r\n\r\n` ;
     if(responseBody != ''){
-      responseStr += responseBody;
+        responseStr += responseBody;
     }
   }
   
   // write to socket
   console.log("response str",responseStr);
+  console.log("curr active socket ",currActiveSocket);
   currActiveSocket.write(responseStr);
 }
 
